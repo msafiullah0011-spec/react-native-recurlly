@@ -1,11 +1,12 @@
 import { icons } from "./icons";
+import type { SubscriptionIconType } from "./subscription-icon";
 
 export type BillingCycle = "Monthly" | "Yearly";
 
 export type Subscription = {
   id: string;
   name: string;
-  icon: (typeof icons)[keyof typeof icons];
+  icon: SubscriptionIconType;
   color: string;
   price: number;
   billingCycle: BillingCycle;
@@ -14,11 +15,15 @@ export type Subscription = {
   startedOn: string;
 };
 
+function image(source: (typeof icons)[keyof typeof icons]): SubscriptionIconType {
+  return { kind: "image", source };
+}
+
 export const subscriptions: Subscription[] = [
   {
     id: "netflix",
     name: "Netflix",
-    icon: icons.netflix,
+    icon: image(icons.netflix),
     color: "#E50914",
     price: 15.49,
     billingCycle: "Monthly",
@@ -29,7 +34,7 @@ export const subscriptions: Subscription[] = [
   {
     id: "spotify",
     name: "Spotify",
-    icon: icons.spotify,
+    icon: image(icons.spotify),
     color: "#1DB954",
     price: 9.99,
     billingCycle: "Monthly",
@@ -40,7 +45,7 @@ export const subscriptions: Subscription[] = [
   {
     id: "claude",
     name: "Claude Max",
-    icon: icons.claude,
+    icon: image(icons.claude),
     color: "#DA7756",
     price: 100,
     billingCycle: "Monthly",
@@ -51,7 +56,7 @@ export const subscriptions: Subscription[] = [
   {
     id: "figma",
     name: "Figma",
-    icon: icons.figma,
+    icon: image(icons.figma),
     color: "#A259FF",
     price: 12,
     billingCycle: "Monthly",
@@ -62,7 +67,7 @@ export const subscriptions: Subscription[] = [
   {
     id: "adobe",
     name: "Adobe Creative Cloud",
-    icon: icons.adobe,
+    icon: image(icons.adobe),
     color: "#FA0F00",
     price: 54.99,
     billingCycle: "Monthly",
@@ -73,7 +78,7 @@ export const subscriptions: Subscription[] = [
   {
     id: "notion",
     name: "Notion",
-    icon: icons.notion,
+    icon: image(icons.notion),
     color: "#37352F",
     price: 96,
     billingCycle: "Yearly",
@@ -84,7 +89,7 @@ export const subscriptions: Subscription[] = [
   {
     id: "github",
     name: "GitHub",
-    icon: icons.github,
+    icon: image(icons.github),
     color: "#2188FF",
     price: 4,
     billingCycle: "Monthly",
@@ -98,8 +103,8 @@ export function getSubscriptionById(id: string) {
   return subscriptions.find((subscription) => subscription.id === id);
 }
 
-export function getUpcomingSubscriptions(limit = 4) {
-  return [...subscriptions]
+export function getUpcomingSubscriptions(list: Subscription[] = subscriptions, limit = 4) {
+  return [...list]
     .sort(
       (a, b) =>
         new Date(a.nextBillingDate).getTime() -
@@ -108,8 +113,8 @@ export function getUpcomingSubscriptions(limit = 4) {
     .slice(0, limit);
 }
 
-export function getMonthlyTotal() {
-  return subscriptions.reduce(
+export function getMonthlyTotal(list: Subscription[] = subscriptions) {
+  return list.reduce(
     (total, subscription) =>
       total +
       (subscription.billingCycle === "Yearly"

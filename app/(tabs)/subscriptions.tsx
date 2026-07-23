@@ -1,7 +1,8 @@
 import "@/global.css";
 
 import { SubscriptionRow } from "@/components/subscription-row";
-import { subscriptions, type Subscription } from "@/constants/subscriptions";
+import type { Subscription } from "@/constants/subscriptions";
+import { useSubscriptions } from "@/context/subscriptions-context";
 import { useMemo, useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -10,9 +11,10 @@ const ALL = "All";
 
 export default function Subscriptions() {
   const insets = useSafeAreaInsets();
+  const { subscriptions } = useSubscriptions();
   const categories = useMemo(
     () => [ALL, ...Array.from(new Set(subscriptions.map((s) => s.category)))],
-    [],
+    [subscriptions],
   );
   const [category, setCategory] = useState(ALL);
 

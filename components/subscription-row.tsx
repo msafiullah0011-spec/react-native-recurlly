@@ -1,8 +1,9 @@
+import { SubscriptionIcon } from "@/components/subscription-icon";
 import type { Subscription } from "@/constants/subscriptions";
 import { withOpacity } from "@/utils/color";
 import { formatDate, formatMoney } from "@/utils/format";
 import { Link } from "expo-router";
-import { Image, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 export function SubscriptionRow({ subscription }: { subscription: Subscription }) {
   return (
@@ -19,11 +20,7 @@ export function SubscriptionRow({ subscription }: { subscription: Subscription }
       >
         <View className="sub-head">
           <View className="sub-main">
-            <Image
-              source={subscription.icon}
-              className="sub-icon"
-              resizeMode="contain"
-            />
+            <SubscriptionIcon icon={subscription.icon} size={64} rounded className="sub-icon" />
             <View className="sub-copy">
               <Text className="sub-title" numberOfLines={1}>
                 {subscription.name}
