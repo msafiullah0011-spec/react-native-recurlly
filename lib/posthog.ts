@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import PostHog from 'posthog-react-native'
 import { Platform } from 'react-native'
 
@@ -36,6 +37,11 @@ export const posthog = isStaticRenderingPass
       flushAt: 20,
       flushInterval: 10000,
       preloadFeatureFlags: true,
+      // posthog-react-native defaults to expo-file-system's legacy string API for
+      // persistence when it's resolvable, which Expo SDK 54 always throws on from
+      // the main entrypoint (must go through "expo-file-system/legacy" instead).
+      // Forcing AsyncStorage sidesteps that broken path entirely.
+      customStorage: AsyncStorage,
     })
 
 if (!isStaticRenderingPass) {
