@@ -1,12 +1,20 @@
 import React from 'react'
 import { Text, View } from 'react-native'
+import { usePostHog } from 'posthog-react-native'
 
-const settings = () => {
+const Settings = () => {
+  const posthog = usePostHog();
+
+  const handleSignOut = () => {
+    posthog.capture('user_signed_out');
+    posthog.reset();
+  };
+
   return (
     <View>
-      <Text>settings</Text>
+      <Text>Settings</Text>
     </View>
   )
 }
 
-export default settings
+export default Settings
