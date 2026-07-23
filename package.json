@@ -1,5 +1,11 @@
 {
-  "name": "react_native_recurlly",
+  "name": "recurlly",
+  "description": "A subscription tracker built with Expo and React Native.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/msafiullah0011-spec/react-native-recurlly.git"
+  },
   "main": "expo-router/entry",
   "version": "1.0.0",
   "private": true,

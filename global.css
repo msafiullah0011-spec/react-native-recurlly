@@ -435,4 +435,76 @@
     .category-chip-text-active {
         @apply text-accent!;
     }
+
+    .insights-header {
+        @apply mb-5! flex-row! items-center! justify-between!;
+    }
+
+    .insights-icon-button {
+        @apply size-11! items-center! justify-center! rounded-full! bg-muted!;
+    }
+
+    .insights-header-title {
+        @apply text-xl! font-sans-bold! text-primary!;
+    }
+
+    .chart-card {
+        @apply mb-5! rounded-3xl! border! border-border! bg-card! p-5! pt-6!;
+    }
+
+    .expenses-card {
+        @apply mb-5! flex-row! items-center! justify-between! rounded-2xl! border! border-border! bg-card! p-5!;
+    }
+
+    .expenses-label {
+        @apply text-lg! font-sans-bold! text-primary!;
+    }
+
+    .expenses-subtext {
+        @apply mt-1! text-sm! font-sans-medium! text-muted-foreground!;
+    }
+
+    .expenses-amount {
+        @apply text-lg! font-sans-bold! text-primary!;
+    }
+
+    .expenses-badge {
+        @apply mt-1! text-sm! font-sans-semibold! text-muted-foreground!;
+    }
+
+    .history-card {
+        @apply mb-3! flex-row! items-center! justify-between! rounded-2xl! p-4!;
+    }
+
+    .history-main {
+        @apply min-w-0! flex-1! flex-row! items-center! gap-3!;
+    }
+
+    .history-icon {
+        @apply size-12! rounded-xl!;
+    }
+
+    .history-copy {
+        @apply min-w-0! flex-1!;
+    }
+
+    .history-name {
+        @apply mb-1! text-base! font-sans-bold! text-primary!;
+    }
+
+    .history-date {
+        @apply text-sm! font-sans-semibold! text-primary/70!;
+    }
+
+    .history-price-box {
+        @apply ml-3! shrink-0! items-end!;
+    }
+
+    .history-price {
+        @apply mb-1! text-base! font-sans-bold! text-primary!;
+    }
+
+    .history-cycle {
+        @apply text-sm! font-sans-medium! text-primary/70!;
+    }
 }
