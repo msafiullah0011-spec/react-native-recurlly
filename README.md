@@ -1,51 +1,78 @@
-# Welcome to your Expo app 👋
+# Recurlly
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A subscription tracker built with Expo and React Native — keep tabs on every recurring
+payment, see what's coming up, and understand where the money actually goes each month.
 
-## Get started
+|                                             Home                                             |                                       Subscriptions                                        |                                    Monthly Insights                                    |
+| :-------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------: |
+| ![Home screen](docs/screenshots/home.png) | ![Subscriptions screen](docs/screenshots/subscriptions.png) | ![Monthly Insights screen](docs/screenshots/insights.png) |
 
-1. Install dependencies
+## Features
 
-   ```bash
-   npm install
-   ```
+- **Auth** — email/password sign-up and sign-in with email OTP verification, powered by [Clerk](https://clerk.com).
+- **Home dashboard** — total monthly spend, the next payment due, and a quick-glance list of upcoming charges.
+- **Subscriptions** — the full list, filterable by category, with a detail view per subscription (billing cycle, next payment, member-since date, cancel).
+- **Add a subscription** — a form that auto-resolves a brand icon and color from the name you type (60+ known services, with a category-based fallback for anything else).
+- **Monthly Insights** — a weekday spend distribution chart (custom-built with `react-native-svg`, no charting library), a monthly expenses summary, and subscription history.
+- **Analytics** — key actions (sign-up, sign-in, subscription created/viewed, sign-out) are instrumented with [PostHog](https://posthog.com).
 
-2. Start the app
+Onboarding is scaffolded but not yet built out — it's currently a placeholder screen.
 
-   ```bash
-   npx expo start
-   ```
+## Tech stack
 
-In the output, you'll find options to open the app in a
+- [Expo](https://docs.expo.dev/versions/v54.0.0/) 54 / React Native 0.81, with [Expo Router](https://docs.expo.dev/router/introduction/) for file-based navigation
+- [NativeWind](https://www.nativewind.dev/) (Tailwind CSS v4 for React Native) for styling
+- [Clerk](https://clerk.com) for authentication
+- [PostHog](https://posthog.com) for product analytics
+- [react-native-svg](https://github.com/software-mansion/react-native-svg) for the custom insights chart
+- TypeScript throughout
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Getting started
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Prerequisites
 
-## Get a fresh project
+- Node.js 18+
+- A [Clerk](https://dashboard.clerk.com) application (for its publishable key)
+- A [PostHog](https://posthog.com) project (optional — analytics degrade gracefully without it)
 
-When you're ready, run:
+### Setup
 
 ```bash
-npm run reset-project
+npm install
+cp .env.example .env
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Fill in `.env` with your own keys:
 
-## Learn more
+```
+EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+EXPO_PUBLIC_POSTHOG_PROJECT_TOKEN=phc_...
+EXPO_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Then run it:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npx expo start
+```
 
-## Join the community
+From the CLI output you can open the app in an iOS simulator, Android emulator, a physical
+device via [Expo Go](https://expo.dev/go), or the web.
 
-Join our community of developers creating universal apps.
+## Project structure
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-# react-native-recurlly
+```
+app/                 Expo Router screens (file-based routing)
+  (auth)/             Sign-in, sign-up, email verification
+  (tabs)/             Home, Subscriptions, Monthly Insights, Settings
+  subscriptions/[id]  Subscription detail
+components/          Reusable UI (subscription cards, the create-subscription modal, the chart)
+constants/           Static subscription data, icon/brand resolution, shared config
+context/             App-wide subscription state
+lib/                 PostHog client setup
+utils/               Formatting/color helpers
+```
+
+## License
+
+MIT — see [LICENSE](LICENSE).
