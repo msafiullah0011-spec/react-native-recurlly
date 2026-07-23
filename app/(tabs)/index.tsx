@@ -1,47 +1,134 @@
 import "@/global.css";
+
+import { CreateSubscriptionModal } from "@/components/CreateSubscriptionModal";
+import { SubscriptionIcon } from "@/components/subscription-icon";
+import { SubscriptionRow } from "@/components/subscription-row";
+import { icons } from "@/constants/icons";
+import { getMonthlyTotal, getUpcomingSubscriptions, type Subscription } from "@/constants/subscriptions";
+import { useSubscriptions } from "@/context/subscriptions-context";
+import { formatDate, formatMoney } from "@/utils/format";
 import { Link } from "expo-router";
-import { Text, View } from "react-native";
+import { useState } from "react";
+import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function App() {
+export default function Home() {
+  const insets = useSafeAreaInsets();
+  const { subscriptions, addSubscription } = useSubscriptions();
+  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
+  const monthlyTotal = getMonthlyTotal(subscriptions);
+  const upcoming = getUpcomingSubscriptions(subscriptions);
+  const nextPayment = upcoming[0];
+
   return (
-    <View className="flex-1 items-center justify-center bg-background">
-      <Text className="text-xl font-bold text-success">
-        Welcome to Nativewind!
-      </Text>
-      <Link
-        href="/onboarding"
-        className="mt-4 rounded bg-primary text-white p-4"
-      >
-        Go to Onboarding
-      </Link>
+    <View className="flex-1 bg-background">
+      <FlatList
+        data={subscriptions}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }: { item: Subscription }) => (
+          <SubscriptionRow subscription={item} />
+        )}
+        ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          paddingTop: insets.top + 16,
+          paddingBottom: 140,
+        }}
+        ListEmptyComponent={
+          <Text className="home-empty-state">No subscriptions yet.</Text>
+        }
+        ListHeaderComponent={
+          <>
+            <View className="home-header">
+              <View className="home-user">
+                <Image
+                  source={require("@/assets/images/avatar.png")}
+                  className="home-avatar"
+                  resizeMode="cover"
+                />
+                <Text className="home-user-name">Welcome back</Text>
+              </View>
+              <Pressable onPress={() => setIsCreateModalVisible(true)}>
+                <Image
+                  source={icons.add}
+                  className="home-add-icon"
+                  resizeMode="contain"
+                />
+              </Pressable>
+            </View>
 
-      <Link
-        href="/(auth)/sign-in"
-        className="mt-4 rounded bg-primary text-white p-4"
-      >
-        Go to SignIn
-      </Link>
+            <View className="home-balance-card">
+              <Text className="home-balance-label">Monthly Spend</Text>
+              <View className="home-balance-row">
+                <Text className="home-balance-amount">
+                  {formatMoney(monthlyTotal)}
+                </Text>
+              </View>
+              {nextPayment ? (
+                <Text className="home-balance-date">
+                  Next payment {formatDate(nextPayment.nextBillingDate)} ·{" "}
+                  {nextPayment.name}
+                </Text>
+              ) : null}
+            </View>
 
-      <Link
-        href="/(auth)/sign-up"
-        className="mt-4 rounded bg-primary text-white p-4"
-      >
-        Go to SignUp
-      </Link>
+            <View className="list-head">
+              <Text className="list-title">Upcoming</Text>
+              <Pressable className="list-action">
+                <Text className="list-action-text">See All</Text>
+              </Pressable>
+            </View>
 
+            {upcoming.length > 0 ? (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {upcoming.map((subscription) => (
+                  <Link
+                    key={subscription.id}
+                    href={{
+                      pathname: "/subscriptions/[id]",
+                      params: { id: subscription.id },
+                    }}
+                    asChild
+                  >
+                    <Pressable className="upcoming-card">
+                      <View className="upcoming-row">
+                        <SubscriptionIcon
+                          icon={subscription.icon}
+                          size={56}
+                          className="upcoming-icon"
+                        />
+                        <View>
+                          <Text className="upcoming-price">
+                            {formatMoney(subscription.price)}
+                          </Text>
+                          <Text className="upcoming-meta">
+                            {formatDate(subscription.nextBillingDate)}
+                          </Text>
+                        </View>
+                      </View>
+                      <Text className="upcoming-name" numberOfLines={1}>
+                        {subscription.name}
+                      </Text>
+                    </Pressable>
+                  </Link>
+                ))}
+              </ScrollView>
+            ) : (
+              <Text className="home-empty-state">No upcoming payments.</Text>
+            )}
 
-      <Link href="/subscriptions/spotify">
-  Spotify Subscription
-</Link>
+            <View className="list-head">
+              <Text className="list-title">All Subscriptions</Text>
+            </View>
+          </>
+        }
+      />
 
-<Link
-  href={{
-    pathname: "/subscriptions/[id]",
-    params: { id: "claude" },
-  }}
->
-  Claude Max Subscription
-</Link>
+      <CreateSubscriptionModal
+        visible={isCreateModalVisible}
+        onClose={() => setIsCreateModalVisible(false)}
+        onCreate={addSubscription}
+      />
     </View>
   );
 }
