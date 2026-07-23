@@ -352,6 +352,22 @@
         @apply text-sm! font-sans-bold! text-accent!;
     }
 
+    .auth-top-bar {
+        @apply mb-2! flex-row! items-center!;
+    }
+
+    .auth-back-button {
+        @apply size-10! items-center! justify-center! rounded-full! bg-muted!;
+    }
+
+    .auth-otp-input {
+        @apply w-full! rounded-2xl! border! border-border! bg-background! px-4! py-4! text-2xl! font-sans-bold! text-primary!;
+    }
+
+    .auth-resend-row {
+        @apply mt-4! flex-row! items-center! justify-center! gap-1!;
+    }
+
     .modal-overlay {
         @apply flex-1! bg-black/50!;
     }
