@@ -2,9 +2,11 @@ import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
+import { PostHogProvider } from "posthog-react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import "@/global.css";
+import { posthog } from "@/lib/posthog";
 import { tokenCache } from "@/utils/token-cache";
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
@@ -55,10 +57,12 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} tokenCache={tokenCache}>
-        <RootNavigator />
-      </ClerkProvider>
-    </SafeAreaProvider>
+    <PostHogProvider client={posthog} autocapture>
+      <SafeAreaProvider>
+        <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} tokenCache={tokenCache}>
+          <RootNavigator />
+        </ClerkProvider>
+      </SafeAreaProvider>
+    </PostHogProvider>
   );
 }

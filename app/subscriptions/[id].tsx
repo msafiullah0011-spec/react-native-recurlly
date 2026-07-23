@@ -3,9 +3,10 @@ import "@/global.css";
 import { icons } from "@/constants/icons";
 import { getSubscriptionById } from "@/constants/subscriptions";
 import { formatDate, formatMoney } from "@/utils/format";
-import { Link, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { Link, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useState } from "react";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { usePostHog } from "posthog-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SubscriptionDetails() {
@@ -13,6 +14,13 @@ export default function SubscriptionDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const subscription = getSubscriptionById(id);
   const [cancelled, setCancelled] = useState(false);
+  const posthog = usePostHog();
+
+  useFocusEffect(
+    useCallback(() => {
+      posthog.capture("subscription_viewed", { subscription_id: id });
+    }, [id, posthog]),
+  );
 
   if (!subscription) {
     return (

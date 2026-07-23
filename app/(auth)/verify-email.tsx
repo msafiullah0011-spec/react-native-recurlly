@@ -13,6 +13,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { usePostHog } from "posthog-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const RESEND_COOLDOWN_SECONDS = 30;
@@ -22,6 +23,7 @@ const VerifyEmail = () => {
   const router = useRouter();
   const { email } = useLocalSearchParams<{ email?: string }>();
   const insets = useSafeAreaInsets();
+  const posthog = usePostHog();
 
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -60,6 +62,15 @@ const VerifyEmail = () => {
       });
 
       if (result.status === "complete") {
+        // Never pass email or username as the distinct id — those are PII and change.
+        if (result.createdUserId) {
+          const created_at = new Date().toISOString();
+          posthog.identify(result.createdUserId, {
+            $set: signUp?.emailAddress ? { email: signUp.emailAddress } : {},
+            $set_once: { created_at },
+          });
+          posthog.capture("user_signed_up", { created_at });
+        }
         await setActive({ session: result.createdSessionId });
       } else {
         setError("That code didn't work. Please try again.");

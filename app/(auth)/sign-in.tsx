@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useSignIn } from "@clerk/clerk-expo";
+import { useAuth, useSignIn, useUser } from "@clerk/clerk-expo";
 import clsx from "clsx";
 import { Link } from "expo-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -13,6 +13,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { usePostHog } from "posthog-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -40,6 +41,9 @@ function validate(email: string, password: string): FieldErrors {
 
 const SignIn = () => {
   const { signIn, setActive, isLoaded } = useSignIn();
+  const { isSignedIn, userId } = useAuth();
+  const { user } = useUser();
+  const posthog = usePostHog();
   const insets = useSafeAreaInsets();
 
   const [email, setEmail] = useState("");
@@ -48,6 +52,24 @@ const SignIn = () => {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const hasTrackedSignIn = useRef(false);
+
+  // Never pass email or username as the distinct id — those are PII and change.
+  useEffect(() => {
+    if (isSignedIn && userId && !hasTrackedSignIn.current) {
+      hasTrackedSignIn.current = true;
+      posthog.identify(userId, {
+        $set: {
+          ...(user?.primaryEmailAddress?.emailAddress
+            ? { email: user.primaryEmailAddress.emailAddress }
+            : {}),
+          ...(user?.fullName ? { name: user.fullName } : {}),
+        },
+      });
+      posthog.capture("user_signed_in");
+    }
+  }, [isSignedIn, userId, user, posthog]);
 
   const handleSignIn = async () => {
     if (!isLoaded || isSubmitting) return;
