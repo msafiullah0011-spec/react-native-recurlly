@@ -3,6 +3,7 @@ import { resolveSubscriptionIcon } from "@/constants/subscription-icon";
 import type { BillingCycle, Subscription } from "@/constants/subscriptions";
 import { Ionicons } from "@expo/vector-icons";
 import clsx from "clsx";
+import { usePostHog } from "posthog-react-native";
 import { useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -55,6 +56,7 @@ export function CreateSubscriptionModal({
   onCreate,
 }: CreateSubscriptionModalProps) {
   const insets = useSafeAreaInsets();
+  const posthog = usePostHog();
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -97,6 +99,13 @@ export function CreateSubscriptionModal({
       nextBillingDate: toISODate(renewalDate),
       startedOn: toISODate(startDate),
     };
+
+    posthog.capture("subscription_created", {
+      subscription_name: subscription.name,
+      subscription_price: subscription.price,
+      subscription_frequency: subscription.billingCycle,
+      subscription_category: subscription.category,
+    });
 
     onCreate(subscription);
     resetForm();

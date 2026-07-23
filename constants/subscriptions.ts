@@ -123,3 +123,25 @@ export function getMonthlyTotal(list: Subscription[] = subscriptions) {
     0,
   );
 }
+
+const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+export type WeekdaySpend = { label: string; value: number };
+
+// Buckets each subscription's monthly-equivalent price by the weekday its
+// next payment falls on, so the chart reflects which days money tends to go out.
+export function getWeekdaySpend(list: Subscription[] = subscriptions): WeekdaySpend[] {
+  const totals = new Array(7).fill(0);
+
+  for (const subscription of list) {
+    const day = new Date(subscription.nextBillingDate).getDay();
+    const mondayFirstIndex = (day + 6) % 7;
+    const monthlyEquivalent =
+      subscription.billingCycle === "Yearly"
+        ? subscription.price / 12
+        : subscription.price;
+    totals[mondayFirstIndex] += monthlyEquivalent;
+  }
+
+  return WEEKDAY_LABELS.map((label, index) => ({ label, value: totals[index] }));
+}
