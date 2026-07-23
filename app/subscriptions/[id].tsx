@@ -1,7 +1,8 @@
 import "@/global.css";
 
+import { SubscriptionIcon } from "@/components/subscription-icon";
 import { icons } from "@/constants/icons";
-import { getSubscriptionById } from "@/constants/subscriptions";
+import { useSubscriptions } from "@/context/subscriptions-context";
 import { formatDate, formatMoney } from "@/utils/format";
 import { Link, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useState } from "react";
@@ -12,7 +13,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function SubscriptionDetails() {
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const subscription = getSubscriptionById(id);
+  const { subscriptions } = useSubscriptions();
+  const subscription = subscriptions.find((s) => s.id === id);
   const [cancelled, setCancelled] = useState(false);
   const posthog = usePostHog();
 
@@ -49,11 +51,7 @@ export default function SubscriptionDetails() {
         <View className="sub-card sub-card-expanded">
           <View className="sub-head">
             <View className="sub-main">
-              <Image
-                source={subscription.icon}
-                className="sub-icon"
-                resizeMode="contain"
-              />
+              <SubscriptionIcon icon={subscription.icon} size={64} rounded className="sub-icon" />
               <View className="sub-copy">
                 <Text className="sub-title" numberOfLines={1}>
                   {subscription.name}

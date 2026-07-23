@@ -1,22 +1,23 @@
 import "@/global.css";
 
+import { CreateSubscriptionModal } from "@/components/CreateSubscriptionModal";
+import { SubscriptionIcon } from "@/components/subscription-icon";
 import { SubscriptionRow } from "@/components/subscription-row";
 import { icons } from "@/constants/icons";
-import {
-  getMonthlyTotal,
-  getUpcomingSubscriptions,
-  subscriptions,
-  type Subscription,
-} from "@/constants/subscriptions";
+import { getMonthlyTotal, getUpcomingSubscriptions, type Subscription } from "@/constants/subscriptions";
+import { useSubscriptions } from "@/context/subscriptions-context";
 import { formatDate, formatMoney } from "@/utils/format";
 import { Link } from "expo-router";
+import { useState } from "react";
 import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Home() {
   const insets = useSafeAreaInsets();
-  const monthlyTotal = getMonthlyTotal();
-  const upcoming = getUpcomingSubscriptions();
+  const { subscriptions, addSubscription } = useSubscriptions();
+  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
+  const monthlyTotal = getMonthlyTotal(subscriptions);
+  const upcoming = getUpcomingSubscriptions(subscriptions);
   const nextPayment = upcoming[0];
 
   return (
@@ -47,7 +48,7 @@ export default function Home() {
                 />
                 <Text className="home-user-name">Welcome back</Text>
               </View>
-              <Pressable>
+              <Pressable onPress={() => setIsCreateModalVisible(true)}>
                 <Image
                   source={icons.add}
                   className="home-add-icon"
@@ -91,10 +92,10 @@ export default function Home() {
                   >
                     <Pressable className="upcoming-card">
                       <View className="upcoming-row">
-                        <Image
-                          source={subscription.icon}
+                        <SubscriptionIcon
+                          icon={subscription.icon}
+                          size={56}
                           className="upcoming-icon"
-                          resizeMode="contain"
                         />
                         <View>
                           <Text className="upcoming-price">
@@ -121,6 +122,12 @@ export default function Home() {
             </View>
           </>
         }
+      />
+
+      <CreateSubscriptionModal
+        visible={isCreateModalVisible}
+        onClose={() => setIsCreateModalVisible(false)}
+        onCreate={addSubscription}
       />
     </View>
   );

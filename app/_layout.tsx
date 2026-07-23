@@ -6,6 +6,7 @@ import { PostHogProvider } from "posthog-react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import "@/global.css";
+import { SubscriptionsProvider } from "@/context/subscriptions-context";
 import { posthog } from "@/lib/posthog";
 import { tokenCache } from "@/utils/token-cache";
 
@@ -29,16 +30,18 @@ function RootNavigator() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={!!isSignedIn}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="subscriptions/[id]" />
-        <Stack.Screen name="onboarding" />
-      </Stack.Protected>
-      <Stack.Protected guard={!isSignedIn}>
-        <Stack.Screen name="(auth)" />
-      </Stack.Protected>
-    </Stack>
+    <SubscriptionsProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Protected guard={!!isSignedIn}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="subscriptions/[id]" />
+          <Stack.Screen name="onboarding" />
+        </Stack.Protected>
+        <Stack.Protected guard={!isSignedIn}>
+          <Stack.Screen name="(auth)" />
+        </Stack.Protected>
+      </Stack>
+    </SubscriptionsProvider>
   );
 }
 
